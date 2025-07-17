@@ -4,6 +4,11 @@
   "tag": "section",
   "settings": [
     {
+      "type": "image_picker",
+      "id": "banner_image",
+      "label": "Banner Background Image"
+    },
+    {
       "type": "text",
       "id": "logo_text",
       "label": "Logo Text",
@@ -35,8 +40,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
-  background: #f9f9f9;
+  padding: 40px;
+  background-size: cover;
+  background-position: center;
+  color: #000;
+  gap: 20px;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.banner-logo h3,
+.banner-tagline p {
+  margin: 0;
+  font-weight: bold;
 }
 
 .banner-button {
@@ -49,6 +65,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  font-weight: bold;
 }
 
 .banner-button:hover {
@@ -57,7 +74,10 @@
 }
 </style>
 
-<div class="custom-banner">
+<div
+  class="custom-banner"
+  style="background-image: url({{ section.settings.banner_image | image_url: width: 1600 }});"
+>
   <div class="banner-logo">
     <h3>{{ section.settings.logo_text }}</h3>
   </div>
