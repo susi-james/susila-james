@@ -1,6 +1,72 @@
 {% schema %}
-  {
-    "name": "Section name",
-    "settings": []
-  }
+{
+  "name": "Custom Banner",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "logo_text",
+      "label": "Logo Text",
+      "default": "TISSO VISON"
+    },
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "Tagline",
+      "default": "Find the ideal gift for your loved ones."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "CHOOSE GIFT"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Banner"
+    }
+  ]
+}
 {% endschema %}
+
+<style>
+.custom-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: #f9f9f9;
+}
+
+.banner-button {
+  padding: 12px 24px;
+  background: black;
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.banner-button:hover {
+  transform: translateX(5px);
+  background-color: #333;
+}
+</style>
+
+<div class="custom-banner">
+  <div class="banner-logo">
+    <h3>{{ section.settings.logo_text }}</h3>
+  </div>
+  <div class="banner-tagline">
+    <p>{{ section.settings.tagline }}</p>
+  </div>
+  <div class="banner-cta">
+    <button class="banner-button">
+      {{ section.settings.button_text }} <span>→</span>
+    </button>
+  </div>
+</div>
