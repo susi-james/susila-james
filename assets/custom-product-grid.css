@@ -3,11 +3,8 @@
 }
 .manual-product-grid .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 columns */
-  gap: 20px; /* space between products */
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
 }
 .manual-product-grid .card {
   border: 1px solid #ddd;
