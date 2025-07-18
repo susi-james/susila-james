@@ -24,9 +24,9 @@
         {% endcapture %}
 
         <div class="card"
-          data-title="{{ product.title | escape }}"
+          
           data-image="{{ product.featured_image | img_url: 'large' }}"
-          data-price="{{ product.selected_or_first_available_variant.price | money }}"
+          
           data-description="{{ product.description | strip_newlines | escape }}"
           data-variants='{{ variants_json | strip_newlines | escape }}'>
           <img src="{{ product.featured_image | img_url: 'medium' }}" alt="{{ product.title }}">
