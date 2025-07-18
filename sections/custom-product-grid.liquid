@@ -1,5 +1,131 @@
-
 {{ 'custom-product-grid.css' | asset_url | stylesheet_tag }}
+
+<section class="manual-product-grid">
+  {% if section.settings.heading != blank %}
+    <h2>{{ section.settings.heading }}</h2>
+  {% endif %}
+
+  <div class="grid">
+    {% assign product_ids = "product_1,product_2,product_3,product_4,product_5,product_6" | split: "," %}
+    {% for id in product_ids %}
+      {% assign product = all_products[section.settings[id]] %}
+      {% if product %}
+        {% capture variants_json %}
+        [
+          {% for v in product.variants %}
+            {
+              "id": {{ v.id }},
+              "title": "{{ v.title | escape }}",
+              "price": "{{ v.price | money }}"
+            }{% unless forloop.last %},{% endunless %}
+          {% endfor %}
+        ]
+        {% endcapture %}
+
+        <div class="card"
+          data-title="{{ product.title | escape }}"
+          data-image="{{ product.featured_image | img_url: 'large' }}"
+          data-price="{{ product.selected_or_first_available_variant.price | money }}"
+          data-description="{{ product.description | strip_newlines | escape }}"
+          data-variants='{{ variants_json | strip_newlines | escape }}'>
+          <img src="{{ product.featured_image | img_url: 'medium' }}" alt="{{ product.title }}">
+          <div class="title">{{ product.title }}</div>
+          <div class="price">{{ product.price | money }}</div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <!-- Popup Modal -->
+  <div class="product-popup-overlay" id="productPopup">
+    <div class="product-popup">
+      <span class="close-btn" id="popupClose">&times;</span>
+      <img id="popupImage" src="" alt="" />
+      <h3 id="popupTitle"></h3>
+      <p id="popupPrice"></p>
+      <div id="popupDescription"></div>
+
+      <label for="variantSelect">Choose a Variant</label>
+      <select id="variantSelect"></select>
+
+      <button id="addToCartBtn">Add to Cart</button>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const cards = document.querySelectorAll('.manual-product-grid .card');
+  const popup = document.getElementById('productPopup');
+  const closeBtn = document.getElementById('popupClose');
+  const popupImage = document.getElementById('popupImage');
+  const popupTitle = document.getElementById('popupTitle');
+  const popupPrice = document.getElementById('popupPrice');
+  const popupDescription = document.getElementById('popupDescription');
+  const variantSelect = document.getElementById('variantSelect');
+  const addToCartBtn = document.getElementById('addToCartBtn');
+
+  let selectedVariantId = null;
+
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      popupImage.src = card.dataset.image;
+      popupTitle.textContent = card.dataset.title;
+      popupPrice.textContent = card.dataset.price;
+      popupDescription.innerHTML = card.dataset.description;
+
+      // Load variants
+      const variants = JSON.parse(card.dataset.variants);
+      variantSelect.innerHTML = '';
+      variants.forEach(v => {
+        const option = document.createElement('option');
+        option.value = v.id;
+        option.textContent = v.title + ' - ' + v.price;
+        variantSelect.appendChild(option);
+      });
+
+      selectedVariantId = variants[0].id;
+      popup.style.display = 'flex';
+    });
+  });
+
+  variantSelect.addEventListener('change', function () {
+    selectedVariantId = this.value;
+  });
+
+  addToCartBtn.addEventListener('click', function () {
+    if (!selectedVariantId) {
+      alert("Please select a variant.");
+      return;
+    }
+
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: selectedVariantId, quantity: 1 })
+    })
+    .then(response => response.json())
+    .then(data => {
+      alert('Added to cart!');
+      popup.style.display = 'none';
+    })
+    .catch(err => {
+      console.error('Error adding to cart:', err);
+      alert('Could not add to cart.');
+    });
+  });
+
+  closeBtn.addEventListener('click', () => {
+    popup.style.display = 'none';
+  });
+
+  popup.addEventListener('click', (e) => {
+    if (e.target === popup) {
+      popup.style.display = 'none';
+    }
+  });
+});
+</script>
 
 {% schema %}
 {
@@ -52,73 +178,3 @@
   ]
 }
 {% endschema %}
-
-
-
-<section class="manual-product-grid">
-  {% if section.settings.heading != blank %}
-    <h2>{{ section.settings.heading }}</h2>
-  {% endif %}
-
-  <div class="grid">
-    {% assign product_ids = "product_1,product_2,product_3,product_4,product_5,product_6" | split: "," %}
-    {% for id in product_ids %}
-      {% assign product = all_products[section.settings[id]] %}
-      {% if product %}
-        <div class="card"
-          data-title="{{ product.title | escape }}"
-          data-image="{{ product.featured_image | img_url: 'large' }}"
-          data-price="{{ product.selected_or_first_available_variant.price | money }}"
-          data-description="{{ product.description | strip_newlines | escape }}">
-          <img src="{{ product.featured_image | img_url: 'medium' }}" alt="{{ product.title }}">
-          <div class="title">{{ product.title }}</div>
-          <div class="price">{{ product.price | money }}</div>
-        </div>
-      {% endif %}
-    {% endfor %}
-  </div>
-
-  <!-- Popup Modal -->
-  <div class="product-popup-overlay" id="productPopup">
-    <div class="product-popup">
-      <span class="close-btn" id="popupClose">&times;</span>
-      <img id="popupImage" src="" alt="" />
-      <h3 id="popupTitle"></h3>
-      <p id="popupPrice"></p>
-      <div id="popupDescription"></div>
-    </div>
-  </div>
-</section>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const cards = document.querySelectorAll('.manual-product-grid .card');
-  const popup = document.getElementById('productPopup');
-  const closeBtn = document.getElementById('popupClose');
-  const popupImage = document.getElementById('popupImage');
-  const popupTitle = document.getElementById('popupTitle');
-  const popupPrice = document.getElementById('popupPrice');
-  const popupDescription = document.getElementById('popupDescription');
-
-  cards.forEach(card => {
-    card.addEventListener('click', () => {
-      popupImage.src = card.dataset.image;
-      popupTitle.textContent = card.dataset.title;
-      popupPrice.textContent = card.dataset.price;
-      popupDescription.innerHTML = card.dataset.description;
-
-      popup.style.display = 'flex';
-    });
-  });
-
-  closeBtn.addEventListener('click', () => {
-    popup.style.display = 'none';
-  });
-
-  popup.addEventListener('click', (e) => {
-    if (e.target === popup) {
-      popup.style.display = 'none';
-    }
-  });
-});
-</script>
