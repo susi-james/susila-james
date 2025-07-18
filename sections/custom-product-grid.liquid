@@ -12,6 +12,7 @@
       {% if product %}
         {% capture variants_json %}
         [
+    
           {% for v in product.variants %}
             {
               "id": {{ v.id }},
