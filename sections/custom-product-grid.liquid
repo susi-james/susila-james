@@ -30,8 +30,7 @@
           data-description="{{ product.description | strip_newlines | escape }}"
           data-variants='{{ variants_json | strip_newlines | escape }}'>
           <img src="{{ product.featured_image | img_url: 'medium' }}" alt="{{ product.title }}">
-          <div class="title">{{ product.title }}</div>
-          <div class="price">{{ product.price | money }}</div>
+         
         </div>
       {% endif %}
     {% endfor %}
