@@ -45,3 +45,116 @@
   font-size: 24px;
   cursor: pointer;
 }
+
+
+.manual-product-grid {
+  font-family: 'Helvetica Neue', sans-serif;
+}
+
+.manual-product-grid .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.manual-product-grid .card {
+  border: 1px solid #eee;
+  padding: 15px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.manual-product-grid .card img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.product-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.product-popup {
+  background: white;
+  width: 350px;
+  padding: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.product-popup img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.product-popup .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.product-popup h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.product-popup p#popupPrice {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.product-popup select,
+.product-popup .variant-buttons button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  border: 1px solid black;
+  background: white;
+  cursor: pointer;
+}
+
+.product-popup .variant-buttons {
+  display: flex;
+  gap: 5px;
+}
+
+.product-popup .variant-buttons button.active {
+  background: black;
+  color: white;
+}
+
+.product-popup #addToCartBtn {
+  background: black;
+  color: white;
+  padding: 12px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.product-popup #addToCartBtn::after {
+  content: '\2192';
+}
