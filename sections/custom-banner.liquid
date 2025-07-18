@@ -1,3 +1,5 @@
+{{ 'custom-banner.css' | asset_url | stylesheet_tag }}
+
 <section class="gift-guide-banner" style="background-image: url({{ section.settings.background_image | img_url: 'master' }});">
   <div class="gift-guide-content">
     <h2>{{ section.settings.heading }}</h2>
