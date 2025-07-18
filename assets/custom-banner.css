@@ -1,43 +1,89 @@
+.gift-guide-header-wrapper {
+  font-family: 'Helvetica Neue', sans-serif;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 25px;
+  font-size: 14px;
+  border-bottom: 1px solid #ddd;
+}
+
+.logo {
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.top-message {
+  text-align: center;
+  flex-grow: 1;
+  color: #333;
+}
+
+.top-button {
+  background-color: #ffe800;
+  padding: 8px 18px;
+  text-decoration: none;
+  color: #000;
+  font-weight: bold;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .gift-guide-banner {
   background-size: cover;
   background-position: center;
-  padding: 80px 20px;
-  color: black;
-  position: relative;
+  padding: 80px 25px;
   text-align: left;
+  position: relative;
 }
 
 .gift-guide-content {
-  max-width: 500px;
+  max-width: 520px;
   background-color: rgba(255, 255, 255, 0.85);
   padding: 30px;
 }
 
-.gift-guide-banner h2 {
+.gift-guide-content h2 {
   font-size: 2.5rem;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.gift-guide-content p {
+  font-size: 1rem;
   margin-bottom: 20px;
 }
 
-.gift-guide-banner p {
-  font-size: 1rem;
-  margin-bottom: 25px;
-}
-
 .gift-guide-button {
-  display: inline-block;
-  background-color: black;
+  background: black;
   color: white;
-  text-decoration: none;
   padding: 12px 20px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
   font-weight: bold;
-  letter-spacing: 0.5px;
-  transition: background-color 0.3s ease;
+  transition: background 0.3s;
 }
 
 .gift-guide-button:hover {
-  background-color: #333;
+  background: #222;
 }
 
-.gift-guide-button .arrow {
-  margin-left: 8px;
+.gift-guide-button .arrow,
+.top-button .arrow {
+  margin-left: 6px;
+}
+
+.bottom-text {
+  text-align: center;
+  font-size: 12px;
+  margin-top: 20px;
+  padding-bottom: 10px;
+  text-transform: uppercase;
+  color: #333;
 }
