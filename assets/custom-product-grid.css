@@ -1,65 +1,47 @@
-
 .manual-product-grid {
-  padding: 40px 20px;
-}
-.manual-product-grid h2 {
-  text-align: center;
-  margin-bottom: 30px;
+  padding: 40px;
 }
 .manual-product-grid .grid {
   display: grid;
-  gap: 24px;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
 }
 .manual-product-grid .card {
-  border: 1px solid #eee;
-  padding: 16px;
+  border: 1px solid #ddd;
+  padding: 12px;
   text-align: center;
   cursor: pointer;
-  transition: box-shadow 0.2s;
 }
-.manual-product-grid .card:hover {
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-.manual-product-grid img {
+.manual-product-grid .card img {
   max-width: 100%;
   height: auto;
 }
-.manual-product-grid .title {
-  margin-top: 10px;
-  font-weight: 600;
-}
-.manual-product-grid .price {
-  color: #555;
-  margin-top: 5px;
-}
-
-/* Popup Modal */
 .product-popup-overlay {
   display: none;
   position: fixed;
-  z-index: 9999;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  justify-content: center;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
   align-items: center;
+  justify-content: center;
+  z-index: 999;
 }
 .product-popup {
   background: white;
-  max-width: 500px;
+  padding: 24px;
   width: 90%;
-  padding: 20px;
-  border-radius: 6px;
+  max-width: 400px;
   position: relative;
 }
 .product-popup img {
   max-width: 100%;
   height: auto;
+  margin-bottom: 12px;
 }
-.product-popup .close-btn {
+.close-btn {
   position: absolute;
-  top: 10px; right: 15px;
+  top: 8px;
+  right: 12px;
+  font-size: 24px;
   cursor: pointer;
-  font-size: 20px;
 }
