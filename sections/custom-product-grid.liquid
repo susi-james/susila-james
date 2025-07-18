@@ -68,7 +68,7 @@
         <div class="card"
           data-title="{{ product.title | escape }}"
           data-image="{{ product.featured_image | img_url: 'large' }}"
-          data-price="{{ product.price | money }}"
+          data-price="{{ product.selected_or_first_available_variant.price | money }}"
           data-description="{{ product.description | strip_newlines | escape }}">
           <img src="{{ product.featured_image | img_url: 'medium' }}" alt="{{ product.title }}">
           <div class="title">{{ product.title }}</div>
