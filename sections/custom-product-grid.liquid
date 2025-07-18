@@ -43,7 +43,7 @@
   ],
   "presets": [
     {
-      "name": "Manual Product Grid",
+      "name": "Manual Product Grid with Popup",
       "category": "Products"
     }
   ]
@@ -68,6 +68,7 @@
   border: 1px solid #eee;
   padding: 16px;
   text-align: center;
+  cursor: pointer;
   transition: box-shadow 0.2s;
 }
 .manual-product-grid .card:hover {
@@ -85,6 +86,36 @@
   color: #555;
   margin-top: 5px;
 }
+
+/* Popup Modal */
+.product-popup-overlay {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+}
+.product-popup {
+  background: white;
+  max-width: 500px;
+  width: 90%;
+  padding: 20px;
+  border-radius: 6px;
+  position: relative;
+}
+.product-popup img {
+  max-width: 100%;
+  height: auto;
+}
+.product-popup .close-btn {
+  position: absolute;
+  top: 10px; right: 15px;
+  cursor: pointer;
+  font-size: 20px;
+}
 </style>
 {% endstylesheet %}
 
@@ -98,14 +129,62 @@
     {% for id in product_ids %}
       {% assign product = all_products[section.settings[id]] %}
       {% if product %}
-        <div class="card">
-          <a href="{{ product.url }}">
-            <img src="{{ product.featured_image | img_url: 'medium' }}" alt="{{ product.title }}">
-            <div class="title">{{ product.title }}</div>
-            <div class="price">{{ product.price | money }}</div>
-          </a>
+        <div class="card"
+          data-title="{{ product.title | escape }}"
+          data-image="{{ product.featured_image | img_url: 'large' }}"
+          data-price="{{ product.price | money }}"
+          data-description="{{ product.description | strip_newlines | escape }}">
+          <img src="{{ product.featured_image | img_url: 'medium' }}" alt="{{ product.title }}">
+          <div class="title">{{ product.title }}</div>
+          <div class="price">{{ product.price | money }}</div>
         </div>
       {% endif %}
     {% endfor %}
   </div>
+
+  <!-- Popup Modal -->
+  <div class="product-popup-overlay" id="productPopup">
+    <div class="product-popup">
+      <span class="close-btn" id="popupClose">&times;</span>
+      <img id="popupImage" src="" alt="" />
+      <h3 id="popupTitle"></h3>
+      <p id="popupPrice"></p>
+      <div id="popupDescription"></div>
+    </div>
+  </div>
 </section>
+
+{% javascript %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const cards = document.querySelectorAll('.manual-product-grid .card');
+  const popup = document.getElementById('productPopup');
+  const closeBtn = document.getElementById('popupClose');
+  const popupImage = document.getElementById('popupImage');
+  const popupTitle = document.getElementById('popupTitle');
+  const popupPrice = document.getElementById('popupPrice');
+  const popupDescription = document.getElementById('popupDescription');
+
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      popupImage.src = card.dataset.image;
+      popupTitle.textContent = card.dataset.title;
+      popupPrice.textContent = card.dataset.price;
+      popupDescription.innerHTML = card.dataset.description;
+
+      popup.style.display = 'flex';
+    });
+  });
+
+  closeBtn.addEventListener('click', () => {
+    popup.style.display = 'none';
+  });
+
+  popup.addEventListener('click', (e) => {
+    if (e.target === popup) {
+      popup.style.display = 'none';
+    }
+  });
+});
+</script>
+{% endjavascript %}
