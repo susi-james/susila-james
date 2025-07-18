@@ -21,9 +21,23 @@
         "button_label": "SHOP NOW",
         "right_image": "shopify://shop_images/Screenshot_2025-07-17_234825.png"
       }
+    },
+    "custom_product_grid_YFemB9": {
+      "type": "custom-product-grid",
+      "name": "Manual Product Grid",
+      "settings": {
+        "heading": "Featured Products",
+        "product_1": "black-leather-bag",
+        "product_2": "blue-silk-tuxedo",
+        "product_3": "chequered-red-shirt",
+        "product_4": "classic-leather-jacket",
+        "product_5": "classic-varsity-top",
+        "product_6": "dark-denim-top"
+      }
     }
   },
   "order": [
-    "custom_banner_gwtVYw"
+    "custom_banner_gwtVYw",
+    "custom_product_grid_YFemB9"
   ]
 }
