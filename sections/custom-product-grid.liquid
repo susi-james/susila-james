@@ -52,6 +52,7 @@
     </div>
   </div>
 </section>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const cards = document.querySelectorAll('.manual-product-grid .card');
@@ -63,6 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const popupDescription = document.getElementById('popupDescription');
   const variantSelect = document.getElementById('variantSelect');
   const addToCartBtn = document.getElementById('addToCartBtn');
+
   let selectedVariantId = null;
 
   cards.forEach(card => {
@@ -72,6 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
       popupPrice.textContent = card.dataset.price;
       popupDescription.innerHTML = card.dataset.description;
 
+      // Load variants
       const variants = JSON.parse(card.dataset.variants);
       variantSelect.innerHTML = '';
       variants.forEach(v => {
@@ -123,7 +126,6 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 </script>
-
 
 {% schema %}
 {
