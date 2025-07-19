@@ -1,5 +1,57 @@
 {{ 'custom-banner.css' | asset_url | stylesheet_tag }}
 
+<div class="gift-header-wrapper">
+  <div class="gift-header-bar">
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <span class="menu-icon">&#9776;</span>
+      <span class="close-icon" style="display: none;">&times;</span>
+    </button>
+
+    <div class="brand-name">{{ section.settings.title }}</div>
+
+    <div class="desktop-content">
+      <div class="description">{{ section.settings.description }}</div>
+      <a href="{{ section.settings.button_link | default: '#' }}" class="gift-button">
+        {{ section.settings.button_text }} <span class="arrow">→</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" style="display: none;">
+    <div class="brand-name center">{{ section.settings.title }}</div>
+    <div class="description center">{{ section.settings.description }}</div>
+    <a href="{{ section.settings.button_link | default: '#' }}" class="gift-button center">
+      {{ section.settings.button_text }} <span class="arrow">→</span>
+    </a>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const toggle = document.querySelector(".menu-toggle");
+    const menuIcon = document.querySelector(".menu-icon");
+    const closeIcon = document.querySelector(".close-icon");
+    const mobileMenu = document.querySelector(".mobile-menu");
+
+    toggle.addEventListener("click", function () {
+      const isOpen = mobileMenu.style.display === "block";
+
+      if (isOpen) {
+        mobileMenu.style.display = "none";
+        menuIcon.style.display = "inline-block";
+        closeIcon.style.display = "none";
+      } else {
+        mobileMenu.style.display = "block";
+        menuIcon.style.display = "none";
+        closeIcon.style.display = "inline-block";
+      }
+    });
+  });
+</script>
+
+
+
 <section class="gift-guide-header-wrapper">
   <div class="top-bar">
     <div class="logo">{{ section.settings.logo_text }}</div>
@@ -50,12 +102,7 @@
       "label": "Top Button Label",
       "default": "CHOOSE GIFT"
     },
-    {
-      "type": "url",
-      "id": "top_button_link",
-      "label": "Top Button Link",
-      "default": "/collections/all"
-    },
+    
     {
       "type": "image_picker",
       "id": "background_image",
@@ -90,7 +137,20 @@
       "id": "bottom_text",
       "label": "Bottom Footer Text",
       "default": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 6XL"
-    }
+    },
+      {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "TISSO VISON"
+    },
+  
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "CHOOSE GIFT"
+    },
   ],
   "presets": [
     {
