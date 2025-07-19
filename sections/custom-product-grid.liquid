@@ -36,7 +36,53 @@
     {% endfor %}
   </div>
 
-  <!-- Popup Modal -->
+  <div class="quick-view-modal">
+  <button class="quick-view-close" aria-label="Close">×</button>
+
+  <div class="quick-view-content">
+    <div class="product-media">
+      <img src="{{ product.featured_image | img_url: '400x' }}" alt="{{ product.title }}">
+    </div>
+
+    <div class="product-info">
+      <h2 class="product-title">{{ product.title }}</h2>
+      <p class="product-price">{{ product.price | money }}</p>
+      <div class="product-description">
+        {{ product.description | strip_html | truncatewords: 20 }}
+      </div>
+
+      <!-- Color Swatches -->
+      <div class="product-option">
+        <label>Color</label>
+        <div class="color-swatches">
+          <button class="swatch active">White</button>
+          <button class="swatch">Black</button>
+        </div>
+      </div>
+
+      <!-- Size Dropdown -->
+      <div class="product-option">
+        <label for="size">Size</label>
+        <select id="size" name="size">
+          <option value="">Choose your size</option>
+          {% for variant in product.variants %}
+            {% if variant.available %}
+              <option value="{{ variant.id }}">{{ variant.title }}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Add to Cart -->
+      <button class="add-to-cart">
+        ADD TO CART <span class="arrow">→</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+  
+  <!-- Popup Modal
   <div class="product-popup-overlay" id="productPopup">
     <div class="product-popup">
       <span class="close-btn" id="popupClose">&times;</span>
@@ -51,7 +97,7 @@
       <button id="addToCartBtn">Add to Cart</button>
     </div>
   </div>
-</section>
+</section> -->
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
