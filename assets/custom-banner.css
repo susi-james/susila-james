@@ -35,11 +35,12 @@
 }
 
 .gift-guide-banner {
-  background-size: cover;
+  background-size: auto;
   background-position: center;
   padding: 80px 25px;
   text-align: left;
   position: relative;
+  min-height: 500px;
 }
 
 .gift-guide-content {
