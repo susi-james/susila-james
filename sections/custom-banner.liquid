@@ -53,15 +53,6 @@
 
 
 <section class="gift-guide-header-wrapper">
-  <div class="top-bar">
-    <div class="logo">{{ section.settings.logo_text }}</div>
-    <div class="top-message">{{ section.settings.top_text }}</div>
-    <a href="{{ section.settings.top_button_link }}" class="top-button">
-      {{ section.settings.top_button_label }}
-      <span class="arrow">→</span>
-    </a>
-  </div>
-
   <div class="gift-guide-banner" style="background-image: url({{ section.settings.background_image | img_url: 'master' }});">
     <div class="gift-guide-content">
       <h2>{{ section.settings.heading }}</h2>
