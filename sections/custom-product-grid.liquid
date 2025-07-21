@@ -1,32 +1,36 @@
 {{ 'custom-product-grid.css' | asset_url | stylesheet_tag }}
- <section class="manual-product-grid">
+
+<section class="manual-product-grid">
   {% if section.settings.heading != blank %}
     <h2>{{ section.settings.heading }}</h2>
   {% endif %}
 
   <div class="grid">
-    {% assign product_ids = "product_1,product_2,product_3" | split: "," %}
+    {% assign product_ids = "product_1,product_2,product_3,product_4,product_5,product_6" | split: "," %}
     {% for id in product_ids %}
       {% assign product = all_products[section.settings[id]] %}
       {% if product %}
-        <div class="card"
-          data-title="{{ product.title | escape }}"
-          data-image="{{ product.featured_image | img_url: 'large' }}"
-          data-price="{{ product.price | money }}"
-          data-description="{{ product.description | strip_newlines | escape }}"
-          data-variants='[{% for v in product.variants %}
+        {% capture variants_json %}
+        [
+    
+          {% for v in product.variants %}
             {
               "id": {{ v.id }},
               "title": "{{ v.title | escape }}",
-              "price": "{{ v.price | money }}",
-              "option1": "{{ v.option1 }}",
-              "option2": "{{ v.option2 }}"
+              "price": "{{ v.price | money }}"
             }{% unless forloop.last %},{% endunless %}
-          {% endfor %}]'
-        >
+          {% endfor %}
+        ]
+        {% endcapture %}
+
+        <div class="card"
+          data-title="{{ product.title | escape }}"
+          data-image="{{ product.featured_image | img_url: 'large' }}"
+          data-price="{{ product.selected_or_first_available_variant.price | money }}"
+          data-description="{{ product.description | strip_newlines | escape }}"
+          data-variants='{{ variants_json | strip_newlines | escape }}'>
           <img src="{{ product.featured_image | img_url: 'medium' }}" alt="{{ product.title }}">
-          <h3>{{ product.title }}</h3>
-          <p>{{ product.price | money }}</p>
+         
         </div>
       {% endif %}
     {% endfor %}
@@ -41,21 +45,10 @@
       <p id="popupPrice"></p>
       <div id="popupDescription"></div>
 
-      <div class="variant-group" id="colorGroup">
-        <label>Color</label>
-        <div class="color-options" id="colorOptions"></div>
-      </div>
+      <label for="variantSelect">Choose a Variant</label>
+      <select id="variantSelect"></select>
 
-      <div class="variant-group">
-        <label>Size</label>
-        <div class="select-wrapper">
-          <select id="sizeSelect">
-            <option value="">Choose your size</option>
-          </select>
-        </div>
-      </div>
-
-      <button id="addToCartBtn">ADD TO CART →</button>
+      <button id="addToCartBtn">Add to Cart</button>
     </div>
   </div>
 </section>
@@ -69,14 +62,10 @@ document.addEventListener('DOMContentLoaded', function () {
   const popupTitle = document.getElementById('popupTitle');
   const popupPrice = document.getElementById('popupPrice');
   const popupDescription = document.getElementById('popupDescription');
-  const colorOptions = document.getElementById('colorOptions');
-  const sizeSelect = document.getElementById('sizeSelect');
+  const variantSelect = document.getElementById('variantSelect');
   const addToCartBtn = document.getElementById('addToCartBtn');
 
-  let selectedColor = '';
-  let selectedSize = '';
-  let variants = [];
-  let selectedVariant = null;
+  let selectedVariantId = null;
 
   cards.forEach(card => {
     card.addEventListener('click', () => {
@@ -84,71 +73,39 @@ document.addEventListener('DOMContentLoaded', function () {
       popupTitle.textContent = card.dataset.title;
       popupPrice.textContent = card.dataset.price;
       popupDescription.innerHTML = card.dataset.description;
-      variants = JSON.parse(card.dataset.variants);
 
-      const colors = [...new Set(variants.map(v => v.option1))];
-      const sizes = [...new Set(variants.map(v => v.option2))];
-
-      colorOptions.innerHTML = '';
-      colors.forEach(color => {
-        const btn = document.createElement('button');
-        btn.textContent = color;
-        btn.addEventListener('click', () => {
-          selectedColor = color;
-          document.querySelectorAll('#colorOptions button').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          renderSizes();
-        });
-        colorOptions.appendChild(btn);
+      // Load variants
+      const variants = JSON.parse(card.dataset.variants);
+      variantSelect.innerHTML = '';
+      variants.forEach(v => {
+        const option = document.createElement('option');
+        option.value = v.id;
+        option.textContent = v.title + ' - ' + v.price;
+        variantSelect.appendChild(option);
       });
 
-      function renderSizes() {
-        sizeSelect.innerHTML = '<option value="">Choose your size</option>';
-        sizes.forEach(size => {
-          const match = variants.find(v => v.option1 === selectedColor && v.option2 === size);
-          if (match) {
-            const opt = document.createElement('option');
-            opt.value = size;
-            opt.textContent = size;
-            sizeSelect.appendChild(opt);
-          }
-        });
-      }
-
-      sizeSelect.addEventListener('change', () => {
-        selectedSize = sizeSelect.value;
-        selectedVariant = variants.find(v => v.option1 === selectedColor && v.option2 === selectedSize);
-      });
-
-      selectedColor = '';
-      selectedSize = '';
-      selectedVariant = null;
+      selectedVariantId = variants[0].id;
       popup.style.display = 'flex';
     });
   });
 
-  closeBtn.addEventListener('click', () => popup.style.display = 'none');
-  popup.addEventListener('click', e => { if (e.target === popup) popup.style.display = 'none'; });
+  variantSelect.addEventListener('change', function () {
+    selectedVariantId = this.value;
+  });
 
-  addToCartBtn.addEventListener('click', () => {
-    if (!selectedVariant) {
-      alert("Please select color and size");
+  addToCartBtn.addEventListener('click', function () {
+    if (!selectedVariantId) {
+      alert("Please select a variant.");
       return;
     }
 
     fetch('/cart/add.js', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ id: selectedVariant.id, quantity: 1 })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: selectedVariantId, quantity: 1 })
     })
-    .then(() => {
-      if (selectedVariant.option1 === 'Black' && selectedVariant.option2 === 'Medium') {
-        fetch('/cart/add.js', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ id: {{ all_products['soft-winter-jacket'].variants.first.id }}, quantity: 1 })
-        });
-      }
+    .then(response => response.json())
+    .then(data => {
       alert('Added to cart!');
       popup.style.display = 'none';
     })
@@ -157,13 +114,24 @@ document.addEventListener('DOMContentLoaded', function () {
       alert('Could not add to cart.');
     });
   });
+
+  closeBtn.addEventListener('click', () => {
+    popup.style.display = 'none';
+  });
+
+  popup.addEventListener('click', (e) => {
+    if (e.target === popup) {
+      popup.style.display = 'none';
+    }
+  });
 });
 </script>
 
 {% schema %}
 {
-  "name": "Product Grid with Popup",
+  "name": "Manual Product Grid",
   "tag": "section",
+  "class": "manual-product-grid",
   "settings": [
     {
       "type": "text",
@@ -185,14 +153,28 @@ document.addEventListener('DOMContentLoaded', function () {
       "type": "product",
       "id": "product_3",
       "label": "Product 3"
+    },
+    {
+      "type": "product",
+      "id": "product_4",
+      "label": "Product 4"
+    },
+    {
+      "type": "product",
+      "id": "product_5",
+      "label": "Product 5"
+    },
+    {
+      "type": "product",
+      "id": "product_6",
+      "label": "Product 6"
     }
   ],
   "presets": [
     {
-      "name": "Grid with Popup",
-      "category": "Custom"
+      "name": "Manual Product Grid with Popup",
+      "category": "Products"
     }
   ]
 }
 {% endschema %}
-
