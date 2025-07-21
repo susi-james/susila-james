@@ -1,6 +1,184 @@
+{{ 'custom-product-grid.css' | asset_url | stylesheet_tag }}
+
+<section class="manual-product-grid">
+  {% if section.settings.heading != blank %}
+    <h2>{{ section.settings.heading }}</h2>
+  {% endif %}
+
+  <div class="grid">
+    {% assign product_ids = "product_1,product_2,product_3,product_4,product_5,product_6" | split: "," %}
+    {% for id in product_ids %}
+      {% assign product = all_products[section.settings[id]] %}
+      {% if product %}
+        <div class="card"
+          data-title="{{ product.title | escape }}"
+          data-image="{{ product.featured_image | img_url: 'medium' }}"
+          data-price="{{ product.price | money }}"
+          data-description="{{ product.description | strip_newlines | escape }}"
+          data-variants='[
+            {% for variant in product.variants %}
+              {
+                "id": {{ variant.id }},
+                "title": "{{ variant.title | escape }}",
+                "option1": "{{ variant.option1 }}",
+                "option2": "{{ variant.option2 }}",
+                "price": "{{ variant.price | money }}"
+              }{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          ]'
+          data-options='[
+            "{{ product.options_with_values[0].name }}",
+            "{{ product.options_with_values[1].name }}"
+          ]'
+        >
+          <img src="{{ product.featured_image | img_url: 'medium' }}" alt="{{ product.title }}">
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <!-- Popup -->
+  <div class="product-popup-overlay" id="productPopup">
+    <div class="product-popup">
+      <span class="close-btn" id="popupClose">&times;</span>
+      <img id="popupImage" />
+      <h3 id="popupTitle"></h3>
+      <p id="popupPrice"></p>
+      <p id="popupDescription"></p>
+
+      <div>
+        <label>Color</label>
+        <div class="variant-buttons" id="colorOptions"></div>
+      </div>
+
+      <div>
+        <label>Size</label>
+        <select id="sizeOptions">
+          <option disabled selected>Choose your size</option>
+        </select>
+      </div>
+
+      <button id="addToCartBtn">ADD TO CART</button>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const cards = document.querySelectorAll('.manual-product-grid .card');
+  const popup = document.getElementById('productPopup');
+  const closeBtn = document.getElementById('popupClose');
+  const popupImage = document.getElementById('popupImage');
+  const popupTitle = document.getElementById('popupTitle');
+  const popupPrice = document.getElementById('popupPrice');
+  const popupDescription = document.getElementById('popupDescription');
+  const colorOptions = document.getElementById('colorOptions');
+  const sizeOptions = document.getElementById('sizeOptions');
+  const addToCartBtn = document.getElementById('addToCartBtn');
+
+  let currentVariants = [];
+  let selectedColor = null;
+  let selectedSize = null;
+
+  const softWinterJacketHandle = "soft-winter-jacket"; // Adjust if the handle differs
+
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      popupImage.src = card.dataset.image;
+      popupTitle.textContent = card.dataset.title;
+      popupPrice.textContent = card.dataset.price;
+      popupDescription.textContent = card.dataset.description;
+
+      currentVariants = JSON.parse(card.dataset.variants);
+
+      const colors = [...new Set(currentVariants.map(v => v.option1))];
+      const sizes = [...new Set(currentVariants.map(v => v.option2))];
+
+      colorOptions.innerHTML = '';
+      colors.forEach(color => {
+        const btn = document.createElement('button');
+        btn.textContent = color;
+        btn.onclick = () => {
+          selectedColor = color;
+          document.querySelectorAll('#colorOptions button').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+        };
+        colorOptions.appendChild(btn);
+      });
+
+      sizeOptions.innerHTML = `<option disabled selected>Choose your size</option>`;
+      sizes.forEach(size => {
+        const opt = document.createElement('option');
+        opt.value = size;
+        opt.textContent = size;
+        sizeOptions.appendChild(opt);
+      });
+
+      selectedColor = null;
+      selectedSize = null;
+
+      popup.style.display = 'flex';
+    });
+  });
+
+  closeBtn.addEventListener('click', () => popup.style.display = 'none');
+  popup.addEventListener('click', e => { if (e.target === popup) popup.style.display = 'none'; });
+
+  sizeOptions.addEventListener('change', (e) => {
+    selectedSize = e.target.value;
+  });
+
+  addToCartBtn.addEventListener('click', async () => {
+    if (!selectedColor || !selectedSize) {
+      alert("Please select both color and size.");
+      return;
+    }
+
+    const variant = currentVariants.find(v => v.option1 === selectedColor && v.option2 === selectedSize);
+    if (!variant) {
+      alert("Selected variant not available.");
+      return;
+    }
+
+    // Add main product
+    await fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: variant.id, quantity: 1 })
+    });
+
+    // Add "Soft Winter Jacket" if conditions match
+    if (selectedColor === 'Black' && selectedSize === 'Medium') {
+      const res = await fetch(`/products/${softWinterJacketHandle}.js`);
+      const jacketProduct = await res.json();
+      const jacketVariantId = jacketProduct.variants[0].id;
+
+      await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: jacketVariantId, quantity: 1 })
+      });
+    }
+
+    alert("Added to cart!");
+    popup.style.display = 'none';
+  });
+});
+</script>
+
 {% schema %}
-  {
-    "name": "Section name",
-    "settings": []
-  }
+{
+  "name": "Manual Product Grid",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Tisso vison in the wild" },
+    { "type": "product", "id": "product_1", "label": "Product 1" },
+    { "type": "product", "id": "product_2", "label": "Product 2" },
+    { "type": "product", "id": "product_3", "label": "Product 3" },
+    { "type": "product", "id": "product_4", "label": "Product 4" },
+    { "type": "product", "id": "product_5", "label": "Product 5" },
+    { "type": "product", "id": "product_6", "label": "Product 6" }
+  ],
+  "presets": [{ "name": "Manual Product Grid with Popup", "category": "Products" }]
+}
 {% endschema %}
