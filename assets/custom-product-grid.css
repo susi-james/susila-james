@@ -147,4 +147,103 @@
 .product-popup #addToCartBtn::after {
   content: '\2192';
 }
+
+
+.manual-product-grid {
+  padding: 40px;
+  font-family: 'Helvetica Neue', sans-serif;
+}
+
+.manual-product-grid h2 {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.manual-product-grid .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.manual-product-grid .card {
+  cursor: pointer;
+  border: 1px solid #ddd;
+  overflow: hidden;
+  transition: 0.3s;
+}
+.manual-product-grid .card img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.product-popup-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.product-popup {
+  background: white;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.product-popup img {
+  width: 100%;
+}
+
+.close-btn {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.variant-buttons {
+  display: flex;
+  gap: 5px;
+}
+
+.variant-buttons button {
+  flex: 1;
+  border: 1px solid black;
+  padding: 8px;
+  background: white;
+  cursor: pointer;
+}
+
+.variant-buttons button.active {
+  background: black;
+  color: white;
+}
+
+#sizeOptions {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid black;
+  background: white;
+}
+
+#addToCartBtn {
+  background: black;
+  color: white;
+  padding: 12px;
+  font-weight: bold;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+}
+
  
