@@ -6,7 +6,7 @@
   {% endif %}
 
   <div class="grid">
-    {% assign product_ids = "product_1,product_2,product_3,product_4,product_5,product_6,product_7,product_8,product_9" | split: "," %}
+    {% assign product_ids = "product_1,product_2,product_3,product_4,product_5,product_6" | split: "," %}
     {% for id in product_ids %}
       {% assign product = all_products[section.settings[id]] %}
       {% if product %}
