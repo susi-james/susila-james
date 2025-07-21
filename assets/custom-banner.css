@@ -176,6 +176,10 @@
     text-align: center;
   }
 
+  .gift-guide-banner{
+    padding: 0;
+  }
+
   .gift-guide-content{
     position: static;
     width: 100%;
