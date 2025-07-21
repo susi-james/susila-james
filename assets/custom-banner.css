@@ -178,5 +178,6 @@
 
   .gift-guide-content{
     position: static;
+    width: 100%;
   }
 }
