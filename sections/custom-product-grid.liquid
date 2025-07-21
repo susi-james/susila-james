@@ -178,3 +178,165 @@ document.addEventListener('DOMContentLoaded', function () {
   ]
 }
 {% endschema %}
+
+
+<section class="manual-product-grid">
+  {% if section.settings.heading != blank %}
+    <h2>{{ section.settings.heading }}</h2>
+  {% endif %}
+
+  <div class="grid">
+    {% assign product_ids = "product_1,product_2,product_3" | split: "," %}
+    {% for id in product_ids %}
+      {% assign product = all_products[section.settings[id]] %}
+      {% if product %}
+        <div class="card"
+          data-title="{{ product.title | escape }}"
+          data-image="{{ product.featured_image | img_url: 'large' }}"
+          data-price="{{ product.price | money }}"
+          data-description="{{ product.description | strip_newlines | escape }}"
+          data-variants='[{% for v in product.variants %}
+            {
+              "id": {{ v.id }},
+              "title": "{{ v.title | escape }}",
+              "price": "{{ v.price | money }}",
+              "option1": "{{ v.option1 }}",
+              "option2": "{{ v.option2 }}"
+            }{% unless forloop.last %},{% endunless %}
+          {% endfor %}]'
+        >
+          <img src="{{ product.featured_image | img_url: 'medium' }}" alt="{{ product.title }}">
+          <h3>{{ product.title }}</h3>
+          <p>{{ product.price | money }}</p>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <!-- Popup Modal -->
+  <div class="product-popup-overlay" id="productPopup">
+    <div class="product-popup">
+      <span class="close-btn" id="popupClose">&times;</span>
+      <img id="popupImage" src="" alt="" />
+      <h3 id="popupTitle"></h3>
+      <p id="popupPrice"></p>
+      <div id="popupDescription"></div>
+
+      <div class="variant-group" id="colorGroup">
+        <label>Color</label>
+        <div class="color-options" id="colorOptions"></div>
+      </div>
+
+      <div class="variant-group">
+        <label>Size</label>
+        <div class="select-wrapper">
+          <select id="sizeSelect">
+            <option value="">Choose your size</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="addToCartBtn">ADD TO CART →</button>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const cards = document.querySelectorAll('.manual-product-grid .card');
+  const popup = document.getElementById('productPopup');
+  const closeBtn = document.getElementById('popupClose');
+  const popupImage = document.getElementById('popupImage');
+  const popupTitle = document.getElementById('popupTitle');
+  const popupPrice = document.getElementById('popupPrice');
+  const popupDescription = document.getElementById('popupDescription');
+  const colorOptions = document.getElementById('colorOptions');
+  const sizeSelect = document.getElementById('sizeSelect');
+  const addToCartBtn = document.getElementById('addToCartBtn');
+
+  let selectedColor = '';
+  let selectedSize = '';
+  let variants = [];
+  let selectedVariant = null;
+
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      popupImage.src = card.dataset.image;
+      popupTitle.textContent = card.dataset.title;
+      popupPrice.textContent = card.dataset.price;
+      popupDescription.innerHTML = card.dataset.description;
+      variants = JSON.parse(card.dataset.variants);
+
+      const colors = [...new Set(variants.map(v => v.option1))];
+      const sizes = [...new Set(variants.map(v => v.option2))];
+
+      colorOptions.innerHTML = '';
+      colors.forEach(color => {
+        const btn = document.createElement('button');
+        btn.textContent = color;
+        btn.addEventListener('click', () => {
+          selectedColor = color;
+          document.querySelectorAll('#colorOptions button').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          renderSizes();
+        });
+        colorOptions.appendChild(btn);
+      });
+
+      function renderSizes() {
+        sizeSelect.innerHTML = '<option value="">Choose your size</option>';
+        sizes.forEach(size => {
+          const match = variants.find(v => v.option1 === selectedColor && v.option2 === size);
+          if (match) {
+            const opt = document.createElement('option');
+            opt.value = size;
+            opt.textContent = size;
+            sizeSelect.appendChild(opt);
+          }
+        });
+      }
+
+      sizeSelect.addEventListener('change', () => {
+        selectedSize = sizeSelect.value;
+        selectedVariant = variants.find(v => v.option1 === selectedColor && v.option2 === selectedSize);
+      });
+
+      selectedColor = '';
+      selectedSize = '';
+      selectedVariant = null;
+      popup.style.display = 'flex';
+    });
+  });
+
+  closeBtn.addEventListener('click', () => popup.style.display = 'none');
+  popup.addEventListener('click', e => { if (e.target === popup) popup.style.display = 'none'; });
+
+  addToCartBtn.addEventListener('click', () => {
+    if (!selectedVariant) {
+      alert("Please select color and size");
+      return;
+    }
+
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ id: selectedVariant.id, quantity: 1 })
+    })
+    .then(() => {
+      if (selectedVariant.option1 === 'Black' && selectedVariant.option2 === 'Medium') {
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ id: {{ all_products['soft-winter-jacket'].variants.first.id }}, quantity: 1 })
+        });
+      }
+      alert('Added to cart!');
+      popup.style.display = 'none';
+    })
+    .catch(err => {
+      console.error('Error adding to cart:', err);
+      alert('Could not add to cart.');
+    });
+  });
+});
+</script> 
