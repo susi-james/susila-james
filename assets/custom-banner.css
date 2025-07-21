@@ -175,4 +175,8 @@
     flex-grow: 1;
     text-align: center;
   }
+
+  .gift-guide-content{
+    position: static;
+  }
 }
