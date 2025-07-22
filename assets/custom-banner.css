@@ -185,6 +185,7 @@
   .gift-guide-content{
     position: static;
     width: 100%;
+    padding: 30px;
   }
    .gift-header-bar .description{
     display: none;
