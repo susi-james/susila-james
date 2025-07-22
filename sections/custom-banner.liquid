@@ -1,6 +1,5 @@
 {{ 'custom-banner.css' | asset_url | stylesheet_tag }}
 
-
 {% schema %}
 {
   "name": "custom-banner",
@@ -134,8 +133,6 @@
     });
   });
 </script>
-
-
 
 <section class="gift-guide-header-wrapper">
   <div class="gift-guide-banner" style="background-image: url({{ section.settings.background_image | img_url: 'master' }});">
