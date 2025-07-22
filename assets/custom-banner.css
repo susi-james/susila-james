@@ -186,6 +186,9 @@
     position: static;
     width: 100%;
     padding: 30px;
+    h2{
+      margin-top: 0;
+    }
   }
    .gift-header-bar .description{
     display: none;
