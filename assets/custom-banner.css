@@ -189,4 +189,7 @@
    .gift-header-bar .description{
     display: none;
   }
+  .mobile-menu .top_text{
+    margin-top: 20px;
+  }
 }
