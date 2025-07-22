@@ -185,7 +185,7 @@
     position: static;
     width: 100%;
   }
-   .description{
+   .gift-header-bar .description{
     display: none;
   }
 }
