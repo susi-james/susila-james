@@ -169,6 +169,7 @@
 
   .menu-toggle {
     display: inline-block;
+    width: 30px;
   }
 
   .brand-name {
